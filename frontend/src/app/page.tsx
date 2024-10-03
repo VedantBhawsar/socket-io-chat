@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { socket } from "../socket";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
@@ -33,10 +34,24 @@ export default function Home() {
   }, []);
 
   function handleClick() {
-    if (message.trim() && userName.trim()) {
-      socket.emit("chat message", { user: userName, text: message });
-      setMessage("");
+    if (!userName.trim()) {
+      toast.error("please enter username", {
+        style: {
+          borderRadius: "10px",
+        },
+      });
+      return;
     }
+    if (!message.trim()) {
+      toast.error("please enter message", {
+        style: {
+          borderRadius: "10px",
+        },
+      });
+      return;
+    }
+    socket.emit("chat message", { user: userName, text: message });
+    setMessage("");
   }
 
   function handleSetUserName() {
@@ -48,6 +63,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
+      <Toaster />
       <nav className="bg-gray-800 text-white h-16 flex items-center px-5">
         <h1 className="font-bold text-xl">Socket.IO Chat</h1>
         <div className="ml-auto flex items-center gap-4">
